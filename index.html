@@ -48,18 +48,11 @@ body { position: relative; }
   scrollbar-width: thin;
   scrollbar-color: rgba(255,61,90,0.35) transparent;
 }
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-  margin: 4px 0;
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; margin: 4px 0; }
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, rgba(255,61,90,0.45), rgba(255,107,74,0.35));
-  border-radius: 100px;
-  border: 1px solid rgba(255,61,90,0.15);
+  border-radius: 100px; border: 1px solid rgba(255,61,90,0.15);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(255,61,90,0.7), rgba(255,107,74,0.55));
@@ -127,7 +120,6 @@ body { position: relative; }
 
 .main { flex: 1; display: flex; overflow: hidden; }
 
-/* Sidebar */
 .sidebar {
   width: 300px; border-right: 1px solid var(--border);
   background: var(--bg2); display: flex; flex-direction: column;
@@ -177,7 +169,6 @@ body { position: relative; }
 }
 .drill-btn.active .drill-tag { background: rgba(255,61,90,0.2); color: var(--accent); }
 
-/* Center stage */
 .stage {
   flex: 1; display: flex; flex-direction: column;
   background: var(--bg); position: relative; overflow: hidden;
@@ -247,7 +238,6 @@ body { position: relative; }
 }
 .hit-item .rt { color: var(--cyan); font-weight: 600; }
 
-/* Right panel */
 .right-panel {
   width: 300px; border-left: 1px solid var(--border);
   background: var(--bg2); display: flex; flex-direction: column;
@@ -373,7 +363,6 @@ body { position: relative; }
 }
 .form-row input:focus, .form-row select:focus { border-color: var(--accent); }
 
-/* Athlete bar */
 .athlete-bar {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 16px; background: var(--surface); border-radius: 12px;
@@ -385,14 +374,12 @@ body { position: relative; }
 }
 .athlete-bar input::placeholder { color: var(--text3); font-weight: 400; }
 
-/* Streak */
 .streak-badge {
   font-family: var(--mono); font-size: 13px; font-weight: 600;
   color: var(--orange); background: rgba(255,145,0,0.12);
   padding: 4px 10px; border-radius: 8px; display: none;
 }
 
-/* Responsive */
 @media (max-width: 1000px) {
   .sidebar { width: 260px; }
   .right-panel { width: 260px; }
@@ -407,19 +394,12 @@ body { position: relative; }
   .live-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
 }
 
-/* Animations */
 @keyframes flash-in {
   0% { opacity: 0; transform: scale(0.85); }
   100% { opacity: 1; transform: scale(1); }
 }
 .flash-anim { animation: flash-in 0.12s ease-out; }
-@keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(255,61,90,0.5); }
-  70% { box-shadow: 0 0 0 18px rgba(255,61,90,0); }
-  100% { box-shadow: 0 0 0 0 rgba(255,61,90,0); }
-}
 
-/* Toast */
 .toast {
   position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
   background: var(--bg3); border: 1px solid var(--border2); color: var(--text);
@@ -522,7 +502,10 @@ body { position: relative; }
             Session results appear here after each drill.<br>Track progress over time.
           </div>
         </div>
-        <button class="btn btn-ghost" style="width:100%;margin-top:14px" onclick="exportCSV()">Export CSV</button>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+          <button class="btn btn-primary" style="width:100%" onclick="exportPDFReport()">📄 Export PDF Report</button>
+          <button class="btn btn-ghost" style="width:100%" onclick="exportCSV()">Export CSV</button>
+        </div>
       </div>
       <div class="panel-content" id="panelPbs" style="display:none">
         <div id="pbsContent">
@@ -800,7 +783,6 @@ function handlePodData(pid, data) {
     clearTimeout(light.timeoutId);
     delete activeLights[pid];
 
-    // Cognitive / Go-NoGo rules
     if (currentDrill) {
       if (currentDrill.logic === 'cognitive' && light.required && light.color !== light.required) {
         registerMiss(pid, 'Wrong color');
@@ -813,7 +795,6 @@ function handlePodData(pid, data) {
         }
       }
     }
-
     registerHit(pid, rt);
   }
 }
@@ -834,12 +815,10 @@ function registerHit(pid, rt) {
   broadcastToPod(pid, { type: 'hit-ack', rt });
   playBeep(1200, 55);
 
-  // Target hits check
   if (settings.targetHits > 0 && sessionStats.hits >= settings.targetHits) {
     stopDrill();
     return;
   }
-  // Double-light: wait until both cleared
   if (Object.keys(activeLights).length === 0) scheduleNext();
 }
 
@@ -1080,7 +1059,6 @@ function triggerLights() {
     }
     window._focusHome = !window._focusHome;
   } else if (logic === 'peripheral') {
-    // Prefer first and last pods (outer)
     if (pods.length >= 3) {
       const outer = [pods[0], pods[pods.length - 1]];
       targets = [pick(outer)];
@@ -1092,7 +1070,6 @@ function triggerLights() {
       if (second) targets.push(second);
     }
   } else if (logic === 'mirror') {
-    // Alternate left/right halves
     const mid = Math.ceil(pods.length / 2);
     const side = window._mirrorSide % 2 === 0 ? pods.slice(0, mid) : pods.slice(mid);
     targets = side.length ? [pick(side)] : [pick(pods)];
@@ -1107,7 +1084,6 @@ function triggerLights() {
     }
   }
 
-  // Clear previous
   Object.keys(activeLights).forEach(pid => {
     clearTimeout(activeLights[pid].timeoutId);
     broadcastToPod(pid, { type: 'off' });
@@ -1130,7 +1106,6 @@ function triggerLights() {
       required: logic === 'cognitive' ? 'red' : null,
       timeoutId: setTimeout(() => {
         if (activeLights[pid]) {
-          // For go/nogo: missing a green is a miss; ignoring a red is correct (no penalty)
           if (logic === 'gonogo' && activeLights[pid].color === 'red') {
             delete activeLights[pid];
             if (Object.keys(activeLights).length === 0) scheduleNext();
@@ -1190,7 +1165,8 @@ function stopDrill() {
     avgRT: avg,
     bestRT: best,
     accuracy: acc,
-    maxStreak: sessionStats.maxStreak
+    maxStreak: sessionStats.maxStreak,
+    rts: [...sessionStats.rts]
   };
   sessionHistory.unshift(result);
   updatePBs(result);
@@ -1316,6 +1292,317 @@ function exportCSV() {
   a.download = `luminapods-${athleteName || 'session'}.csv`;
   a.click();
   toast('CSV exported');
+}
+
+// ===================== PROFESSIONAL PDF REPORT =====================
+function exportPDFReport() {
+  if (sessionHistory.length === 0) {
+    toast('Complete a session first');
+    return;
+  }
+
+  const r = sessionHistory[0];
+  const pb = personalBests[r.drill] || {};
+  const isNewBest = r.bestRT && pb.bestRT && Math.abs(r.bestRT - pb.bestRT) < 1;
+  const avgStr = formatRT(r.avgRT);
+  const bestStr = formatRT(r.bestRT);
+  const durationStr = formatTime(r.duration);
+  const dateStr = r.time;
+  const athlete = r.athlete || 'Athlete';
+
+  // Build simple RT distribution bars if we have data
+  let distHtml = '';
+  if (r.rts && r.rts.length > 3) {
+    const buckets = [0,0,0,0,0]; // <300, 300-500, 500-700, 700-1000, >1000
+    r.rts.forEach(rt => {
+      if (rt < 300) buckets[0]++;
+      else if (rt < 500) buckets[1]++;
+      else if (rt < 700) buckets[2]++;
+      else if (rt < 1000) buckets[3]++;
+      else buckets[4]++;
+    });
+    const maxB = Math.max(...buckets, 1);
+    const labels = ['<0.30s', '0.30–0.50s', '0.50–0.70s', '0.70–1.00s', '>1.00s'];
+    distHtml = `
+      <div class="section">
+        <h2>Reaction Time Distribution</h2>
+        <div class="dist-grid">
+          ${buckets.map((v, i) => `
+            <div class="dist-row">
+              <span class="dist-label">${labels[i]}</span>
+              <div class="dist-bar-bg"><div class="dist-bar" style="width:${(v/maxB)*100}%"></div></div>
+              <span class="dist-count">${v}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LuminaPods Session Report — ${athlete}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f7f7f9;
+    color: #1a1a1f;
+    line-height: 1.5;
+    padding: 0;
+  }
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    min-height: 100vh;
+    box-shadow: 0 0 40px rgba(0,0,0,0.06);
+  }
+  .header {
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a0a12 100%);
+    color: #fff;
+    padding: 36px 48px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(255,61,90,0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .brand-mark {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ff3d5a, #ff6b4a);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px; color: #fff;
+  }
+  .brand-name {
+    font-size: 18px; font-weight: 700; letter-spacing: -0.3px;
+  }
+  .brand-name span { color: #ff3d5a; }
+  .header h1 {
+    font-size: 28px; font-weight: 800; letter-spacing: -0.6px;
+    margin-bottom: 6px;
+  }
+  .header .meta {
+    font-size: 14px; color: rgba(255,255,255,0.65);
+    display: flex; flex-wrap: wrap; gap: 16px;
+  }
+  .header .meta span { display: inline-flex; align-items: center; gap: 6px; }
+
+  .body { padding: 40px 48px 48px; }
+
+  .section { margin-bottom: 36px; }
+  .section h2 {
+    font-size: 13px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.2px; color: #6b6b80; margin-bottom: 16px;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .metric {
+    background: #f7f7f9;
+    border-radius: 14px;
+    padding: 20px 18px;
+    text-align: center;
+    border: 1px solid #eeeef2;
+  }
+  .metric .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px; font-weight: 600;
+    color: #1a1a1f; line-height: 1.15;
+  }
+  .metric .val.accent { color: #ff3d5a; }
+  .metric .val.green { color: #00c853; }
+  .metric .lbl {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.6px; color: #6b6b80; margin-top: 6px;
+  }
+  .metric.highlight {
+    background: linear-gradient(135deg, #fff5f6, #fff);
+    border-color: #ffcdd2;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 32px;
+  }
+  .info-row {
+    display: flex; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid #eeeef2;
+    font-size: 14px;
+  }
+  .info-row .k { color: #6b6b80; }
+  .info-row .v { font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+  .pb-box {
+    background: #f0faf4;
+    border: 1px solid #c8e6c9;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .pb-box .icon { font-size: 24px; }
+  .pb-box .text { font-size: 14px; font-weight: 500; color: #2e7d32; }
+
+  .dist-grid { display: flex; flex-direction: column; gap: 10px; }
+  .dist-row { display: flex; align-items: center; gap: 12px; }
+  .dist-label { width: 90px; font-size: 12px; color: #6b6b80; font-family: 'JetBrains Mono', monospace; }
+  .dist-bar-bg { flex: 1; height: 10px; background: #eeeef2; border-radius: 5px; overflow: hidden; }
+  .dist-bar { height: 100%; background: linear-gradient(90deg, #ff3d5a, #ff6b4a); border-radius: 5px; }
+  .dist-count { width: 28px; text-align: right; font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+  .footer {
+    margin-top: 48px; padding-top: 24px;
+    border-top: 1px solid #eeeef2;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: #9a9aa8;
+  }
+  .footer .logo { font-weight: 700; color: #1a1a1f; }
+  .footer .logo span { color: #ff3d5a; }
+
+  .actions {
+    position: sticky; top: 0; z-index: 10;
+    background: #fff; border-bottom: 1px solid #eeeef2;
+    padding: 14px 48px; display: flex; gap: 10px; justify-content: flex-end;
+  }
+  .btn {
+    height: 40px; padding: 0 20px; border-radius: 10px;
+    border: none; font-family: inherit; font-weight: 600; font-size: 13px;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-print {
+    background: linear-gradient(135deg, #ff3d5a, #ff6b4a);
+    color: #fff; box-shadow: 0 4px 14px rgba(255,61,90,0.3);
+  }
+  .btn-close {
+    background: #f0f0f4; color: #1a1a1f;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; max-width: none; }
+    .actions { display: none !important; }
+    .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .metric, .pb-box, .dist-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="actions">
+      <button class="btn btn-close" onclick="window.close()">Close</button>
+      <button class="btn btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+
+    <div class="header">
+      <div class="brand">
+        <div class="brand-mark">L</div>
+        <div class="brand-name">Lumina<span>Pods</span></div>
+      </div>
+      <h1>Session Performance Report</h1>
+      <div class="meta">
+        <span>👤 ${athlete}</span>
+        <span>📅 ${dateStr}</span>
+        <span>⚡ ${r.drill}</span>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="section">
+        <h2>Key Metrics</h2>
+        <div class="metrics">
+          <div class="metric">
+            <div class="val">${r.hits}</div>
+            <div class="lbl">Hits</div>
+          </div>
+          <div class="metric">
+            <div class="val">${r.misses}</div>
+            <div class="lbl">Misses</div>
+          </div>
+          <div class="metric">
+            <div class="val accent">${r.accuracy}%</div>
+            <div class="lbl">Accuracy</div>
+          </div>
+          <div class="metric">
+            <div class="val">${avgStr}</div>
+            <div class="lbl">Average RT</div>
+          </div>
+          <div class="metric highlight">
+            <div class="val green">${bestStr}</div>
+            <div class="lbl">Best RT ${isNewBest ? '• PB' : ''}</div>
+          </div>
+          <div class="metric">
+            <div class="val">${r.maxStreak}</div>
+            <div class="lbl">Max Streak</div>
+          </div>
+        </div>
+      </div>
+
+      ${isNewBest ? `
+      <div class="section">
+        <div class="pb-box">
+          <div class="icon">🏆</div>
+          <div class="text">New Personal Best reaction time achieved on this drill.</div>
+        </div>
+      </div>` : ''}
+
+      <div class="section">
+        <h2>Session Details</h2>
+        <div class="info-grid">
+          <div class="info-row"><span class="k">Athlete</span><span class="v">${athlete}</span></div>
+          <div class="info-row"><span class="k">Drill</span><span class="v">${r.drill}</span></div>
+          <div class="info-row"><span class="k">Date & Time</span><span class="v">${dateStr}</span></div>
+          <div class="info-row"><span class="k">Duration</span><span class="v">${durationStr}</span></div>
+          <div class="info-row"><span class="k">Total Attempts</span><span class="v">${r.hits + r.misses}</span></div>
+          <div class="info-row"><span class="k">Hit Rate</span><span class="v">${r.accuracy}%</span></div>
+        </div>
+      </div>
+
+      ${distHtml}
+
+      <div class="footer">
+        <div class="logo">Lumina<span>Pods</span></div>
+        <div>Professional Reaction & Agility Training • Generated ${new Date().toLocaleDateString()}</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Auto-focus print button for convenience
+    setTimeout(() => {
+      // Optional: uncomment to auto-open print dialog
+      // window.print();
+    }, 400);
+  <\/script>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=860,height=900');
+  if (!win) {
+    toast('Please allow pop-ups to export the report');
+    return;
+  }
+  win.document.write(html);
+  win.document.close();
+  toast('Report opened — click “Print / Save as PDF”');
 }
 
 // Custom
