@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0a0f">
 <title>LuminaPods — Pro Reaction & Agility Training</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23ff3d5a'/><stop offset='100%25' stop-color='%23ff6b4a'/></linearGradient></defs><circle cx='50' cy='50' r='42' fill='url(%23g)'/><circle cx='50' cy='50' r='18' fill='%2307070b'/><circle cx='50' cy='50' r='8' fill='%23fff'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -42,6 +43,29 @@
 html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font); }
 body { position: relative; }
 
+/* ========== HIGH-END SCROLLBARS ========== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,61,90,0.35) transparent;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255,61,90,0.45), rgba(255,107,74,0.35));
+  border-radius: 100px;
+  border: 1px solid rgba(255,61,90,0.15);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255,61,90,0.7), rgba(255,107,74,0.55));
+}
+::-webkit-scrollbar-corner { background: transparent; }
+
 /* ========== LANDING ========== */
 #landing {
   position: fixed; inset: 0; z-index: 100;
@@ -55,7 +79,7 @@ body { position: relative; }
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   margin-bottom: 8px;
 }
-.tagline { color: var(--text2); font-size: 15px; margin-bottom: 48px; font-weight: 400; }
+.tagline { color: var(--text2); font-size: 15px; margin-bottom: 48px; font-weight: 400; line-height: 1.5; }
 .mode-cards { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; max-width: 640px; }
 .mode-card {
   background: var(--surface); border: 1px solid var(--border);
@@ -84,8 +108,15 @@ body { position: relative; }
   background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
   flex-shrink: 0; z-index: 10;
 }
-.topbar .brand { font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
+.topbar .brand { font-weight: 700; font-size: 18px; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
 .topbar .brand span { color: var(--accent); }
+.brand-logo {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #fff; font-weight: 800;
+  box-shadow: 0 0 16px rgba(255,61,90,0.4);
+}
 .room-badge {
   background: var(--surface2); border: 1px solid var(--border2);
   border-radius: 100px; padding: 6px 14px; font-family: var(--mono);
@@ -98,14 +129,16 @@ body { position: relative; }
 
 /* Sidebar */
 .sidebar {
-  width: 280px; border-right: 1px solid var(--border);
+  width: 300px; border-right: 1px solid var(--border);
   background: var(--bg2); display: flex; flex-direction: column;
-  flex-shrink: 0; overflow-y: auto;
+  flex-shrink: 0; overflow: hidden;
 }
-.sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); }
+.sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.sidebar-section.scrollable { flex: 1; overflow-y: auto; min-height: 0; }
 .sidebar-section h4 {
   font-size: 11px; font-weight: 600; text-transform: uppercase;
   letter-spacing: 1px; color: var(--text3); margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between;
 }
 .pod-list { display: flex; flex-direction: column; gap: 8px; }
 .pod-item {
@@ -120,24 +153,29 @@ body { position: relative; }
   display: flex; align-items: center; justify-content: center;
   font-weight: 700; font-size: 14px; color: #000;
 }
-.pod-item .pod-info { flex: 1; }
+.pod-item .pod-info { flex: 1; min-width: 0; }
 .pod-item .pod-name { font-size: 13px; font-weight: 600; }
 .pod-item .pod-status { font-size: 11px; color: var(--text3); }
-.pod-item .latency { font-family: var(--mono); font-size: 11px; color: var(--cyan); }
 
-.drill-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+.drill-list { display: flex; flex-direction: column; gap: 6px; }
 .drill-btn {
   text-align: left; padding: 12px 14px; border-radius: var(--radius-sm);
   background: transparent; border: 1px solid transparent;
   color: var(--text); cursor: pointer; font-size: 13px; font-weight: 500;
-  transition: all 0.15s; font-family: var(--font);
+  transition: all 0.15s; font-family: var(--font); width: 100%;
 }
 .drill-btn:hover { background: var(--surface); }
 .drill-btn.active {
   background: rgba(255,61,90,0.12); border-color: rgba(255,61,90,0.35);
   color: var(--accent);
 }
-.drill-btn .drill-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.drill-btn .drill-meta { font-size: 11px; color: var(--text3); margin-top: 3px; line-height: 1.35; }
+.drill-btn .drill-tag {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 6px; margin-top: 5px;
+  background: rgba(255,255,255,0.06); color: var(--text2);
+}
+.drill-btn.active .drill-tag { background: rgba(255,61,90,0.2); color: var(--accent); }
 
 /* Center stage */
 .stage {
@@ -145,16 +183,16 @@ body { position: relative; }
   background: var(--bg); position: relative; overflow: hidden;
 }
 .stage-header {
-  padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid var(--border);
+  padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap;
 }
-.stage-title { font-size: 20px; font-weight: 700; }
-.stage-controls { display: flex; gap: 10px; align-items: center; }
+.stage-title { font-size: 18px; font-weight: 700; }
+.stage-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
 .btn {
-  height: 40px; padding: 0 18px; border-radius: 12px;
+  height: 40px; padding: 0 16px; border-radius: 12px;
   border: none; font-family: var(--font); font-weight: 600; font-size: 13px;
-  cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
   transition: all 0.2s; white-space: nowrap;
 }
 .btn-primary {
@@ -168,85 +206,94 @@ body { position: relative; }
 }
 .btn-ghost:hover { background: var(--surface2); border-color: var(--border2); }
 .btn-danger { background: rgba(255,61,90,0.15); color: var(--accent); border: 1px solid rgba(255,61,90,0.3); }
+.btn-sm { height: 32px; padding: 0 12px; font-size: 12px; border-radius: 9px; }
 
 .stage-body {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 24px; position: relative;
+  padding: 20px; position: relative; overflow-y: auto;
 }
 .big-timer {
-  font-family: var(--mono); font-size: 72px; font-weight: 600;
+  font-family: var(--mono); font-size: 68px; font-weight: 600;
   letter-spacing: -2px; color: var(--text); line-height: 1;
   text-shadow: 0 0 60px rgba(255,61,90,0.25);
 }
 .big-timer.running { color: var(--accent); }
-.status-text { margin-top: 12px; font-size: 15px; color: var(--text2); font-weight: 500; }
+.big-timer.countdown { color: var(--yellow); font-size: 96px; }
+.status-text { margin-top: 10px; font-size: 15px; color: var(--text2); font-weight: 500; }
 
 .live-stats {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
-  width: 100%; max-width: 720px; margin-top: 40px;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+  width: 100%; max-width: 780px; margin-top: 32px;
 }
 .stat-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px; text-align: center;
+  border-radius: var(--radius); padding: 14px 10px; text-align: center;
+  transition: border-color 0.2s;
 }
 .stat-card .val {
-  font-family: var(--mono); font-size: 28px; font-weight: 600;
+  font-family: var(--mono); font-size: 24px; font-weight: 600;
   color: var(--text); line-height: 1.1;
 }
-.stat-card .lbl { font-size: 11px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .lbl { font-size: 10px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
 .hit-feed {
-  position: absolute; bottom: 20px; left: 20px; right: 20px;
-  max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;
+  position: absolute; bottom: 16px; left: 16px; right: 16px;
+  max-height: 110px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;
 }
 .hit-item {
   font-family: var(--mono); font-size: 12px; color: var(--text2);
-  background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 8px;
-  display: flex; justify-content: space-between;
+  background: rgba(0,0,0,0.45); padding: 6px 12px; border-radius: 8px;
+  display: flex; justify-content: space-between; backdrop-filter: blur(8px);
 }
 .hit-item .rt { color: var(--cyan); font-weight: 600; }
 
-/* Right panel - Results / Settings */
+/* Right panel */
 .right-panel {
   width: 300px; border-left: 1px solid var(--border);
   background: var(--bg2); display: flex; flex-direction: column;
-  flex-shrink: 0; overflow-y: auto;
+  flex-shrink: 0; overflow: hidden;
 }
-.panel-tabs { display: flex; border-bottom: 1px solid var(--border); }
+.panel-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .panel-tab {
-  flex: 1; padding: 14px; text-align: center; font-size: 12px; font-weight: 600;
+  flex: 1; padding: 13px; text-align: center; font-size: 12px; font-weight: 600;
   color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent;
   transition: all 0.2s;
 }
 .panel-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-.panel-content { padding: 16px; flex: 1; }
+.panel-content { padding: 16px; flex: 1; overflow-y: auto; min-height: 0; }
 
 .result-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 0; border-bottom: 1px solid var(--border);
+  padding: 9px 0; border-bottom: 1px solid var(--border);
   font-size: 13px;
 }
 .result-row .label { color: var(--text2); }
 .result-row .value { font-family: var(--mono); font-weight: 600; }
+.pb-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  background: rgba(0,230,118,0.15); color: var(--green);
+  padding: 2px 6px; border-radius: 4px; margin-left: 6px;
+}
 
-.settings-group { margin-bottom: 20px; }
+.settings-group { margin-bottom: 18px; }
 .settings-group label {
-  display: block; font-size: 12px; color: var(--text3); margin-bottom: 8px;
+  display: block; font-size: 12px; color: var(--text3); margin-bottom: 7px;
   font-weight: 500;
 }
 .settings-group input[type="range"] { width: 100%; accent-color: var(--accent); }
-.settings-group select, .settings-group input[type="number"] {
+.settings-group select, .settings-group input[type="number"], .settings-group input[type="text"] {
   width: 100%; height: 40px; background: var(--surface); border: 1px solid var(--border);
   border-radius: 10px; color: var(--text); padding: 0 12px; font-family: var(--font);
-  font-size: 13px;
+  font-size: 13px; outline: none;
 }
+.settings-group input:focus, .settings-group select:focus { border-color: var(--accent); }
 .toggle-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 0; font-size: 13px;
+  padding: 9px 0; font-size: 13px;
 }
 .toggle {
   width: 44px; height: 24px; background: var(--surface2); border-radius: 12px;
-  position: relative; cursor: pointer; transition: background 0.2s;
+  position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0;
 }
 .toggle.on { background: var(--accent); }
 .toggle::after {
@@ -310,45 +357,67 @@ body { position: relative; }
 .modal-overlay.show { display: flex; }
 .modal {
   background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: 20px; width: 100%; max-width: 420px;
+  border-radius: 20px; width: 100%; max-width: 440px;
   padding: 28px; box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  max-height: 90vh; overflow-y: auto;
 }
 .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
 .modal p { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
 
-/* Custom drill form */
 .form-row { margin-bottom: 14px; }
 .form-row label { display: block; font-size: 12px; color: var(--text3); margin-bottom: 6px; }
 .form-row input, .form-row select {
   width: 100%; height: 40px; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; color: var(--text); padding: 0 12px; font-size: 13px;
+  border-radius: 10px; color: var(--text); padding: 0 12px; font-size: 13px; outline: none;
+}
+.form-row input:focus, .form-row select:focus { border-color: var(--accent); }
+
+/* Athlete bar */
+.athlete-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; background: var(--surface); border-radius: 12px;
+  margin-bottom: 12px; border: 1px solid var(--border);
+}
+.athlete-bar input {
+  flex: 1; background: transparent; border: none; color: var(--text);
+  font-size: 14px; font-weight: 600; outline: none; font-family: var(--font);
+}
+.athlete-bar input::placeholder { color: var(--text3); font-weight: 400; }
+
+/* Streak */
+.streak-badge {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--orange); background: rgba(255,145,0,0.12);
+  padding: 4px 10px; border-radius: 8px; display: none;
 }
 
 /* Responsive */
-@media (max-width: 900px) {
-  .sidebar { width: 220px; }
-  .right-panel { width: 240px; }
-  .big-timer { font-size: 56px; }
-  .live-stats { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 1000px) {
+  .sidebar { width: 260px; }
+  .right-panel { width: 260px; }
+  .big-timer { font-size: 52px; }
+  .live-stats { grid-template-columns: repeat(3, 1fr); }
 }
-@media (max-width: 700px) {
+@media (max-width: 750px) {
   .main { flex-direction: column; }
-  .sidebar, .right-panel { width: 100%; max-height: 180px; border: none; border-bottom: 1px solid var(--border); }
-  .stage { order: -1; min-height: 50vh; }
-  .big-timer { font-size: 48px; }
+  .sidebar, .right-panel { width: 100%; max-height: 200px; border: none; border-bottom: 1px solid var(--border); }
+  .stage { order: -1; min-height: 45vh; }
+  .big-timer { font-size: 44px; }
+  .live-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
 }
 
 /* Animations */
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(255,61,90,0.3); }
-  50% { box-shadow: 0 0 40px rgba(255,61,90,0.6); }
-}
 @keyframes flash-in {
   0% { opacity: 0; transform: scale(0.85); }
   100% { opacity: 1; transform: scale(1); }
 }
 .flash-anim { animation: flash-in 0.12s ease-out; }
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255,61,90,0.5); }
+  70% { box-shadow: 0 0 0 18px rgba(255,61,90,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,61,90,0); }
+}
 
 /* Toast */
 .toast {
@@ -356,7 +425,7 @@ body { position: relative; }
   background: var(--bg3); border: 1px solid var(--border2); color: var(--text);
   padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500;
   z-index: 300; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4); max-width: 90vw; text-align: center;
 }
 .toast.show { transform: translateX(-50%) translateY(0); }
 </style>
@@ -366,17 +435,17 @@ body { position: relative; }
 <!-- LANDING -->
 <div id="landing">
   <div class="logo">LuminaPods</div>
-  <div class="tagline">Professional reaction & agility training system<br>Use any iPhone as a smart light pod</div>
+  <div class="tagline">Professional single-athlete reaction & agility system<br>Turn any iPhone into a precision training light</div>
   <div class="mode-cards">
     <div class="mode-card" onclick="startDashboard()">
       <div class="icon">🎛️</div>
       <h3>Coach Dashboard</h3>
-      <p>iPad / Laptop control center. Start drills, monitor live stats, manage pods & results.</p>
+      <p>iPad or laptop control center. Launch drills, monitor live stats, and track personal bests.</p>
     </div>
     <div class="mode-card" onclick="startPod()">
       <div class="icon">💡</div>
       <h3>Light Pod</h3>
-      <p>iPhone / phone mode. Full-screen reactive light. Join a session and train.</p>
+      <p>iPhone mode. Full-screen reactive light. Join the session and train as the athlete.</p>
     </div>
   </div>
 </div>
@@ -384,25 +453,35 @@ body { position: relative; }
 <!-- DASHBOARD -->
 <div id="dashboard">
   <div class="topbar">
-    <div class="brand">Lumina<span>Pods</span></div>
+    <div class="brand">
+      <div class="brand-logo">L</div>
+      Lumina<span>Pods</span>
+    </div>
     <div class="room-badge">
       <div class="dot" id="connDot"></div>
       <span id="roomCodeDisplay">----</span>
     </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-ghost" onclick="copyRoom()">Copy Code</button>
-      <button class="btn btn-ghost" onclick="showCustomModal()">+ Custom</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="streak-badge" id="streakBadge">🔥 0</span>
+      <button class="btn btn-ghost btn-sm" onclick="testLights()">Test Lights</button>
+      <button class="btn btn-ghost btn-sm" onclick="copyRoom()">Copy Code</button>
+      <button class="btn btn-ghost btn-sm" onclick="showCustomModal()">+ Custom</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
     </div>
   </div>
   <div class="main">
     <div class="sidebar">
       <div class="sidebar-section">
+        <h4>Athlete</h4>
+        <div class="athlete-bar">
+          <input type="text" id="athleteName" placeholder="Athlete name…" onchange="saveAthlete()" maxlength="24">
+        </div>
         <h4>Connected Pods <span id="podCount" style="color:var(--cyan)">(0)</span></h4>
         <div class="pod-list" id="podList">
           <div style="font-size:12px;color:var(--text3);padding:8px 0">Waiting for phones to join…</div>
         </div>
       </div>
-      <div class="sidebar-section" style="flex:1">
+      <div class="sidebar-section scrollable">
         <h4>Drill Library</h4>
         <div class="drill-list" id="drillList"></div>
       </div>
@@ -419,9 +498,10 @@ body { position: relative; }
       </div>
       <div class="stage-body">
         <div class="big-timer" id="mainTimer">00:00.0</div>
-        <div class="status-text" id="statusText">Connect pods and select a drill to begin</div>
+        <div class="status-text" id="statusText">Connect pods • Select a drill • Start training</div>
         <div class="live-stats">
           <div class="stat-card"><div class="val" id="statHits">0</div><div class="lbl">Hits</div></div>
+          <div class="stat-card"><div class="val" id="statMiss">0</div><div class="lbl">Misses</div></div>
           <div class="stat-card"><div class="val" id="statAvg">—</div><div class="lbl">Avg RT</div></div>
           <div class="stat-card"><div class="val" id="statBest">—</div><div class="lbl">Best RT</div></div>
           <div class="stat-card"><div class="val" id="statAcc">—</div><div class="lbl">Accuracy</div></div>
@@ -432,16 +512,25 @@ body { position: relative; }
 
     <div class="right-panel">
       <div class="panel-tabs">
-        <div class="panel-tab active" onclick="switchPanel('results')">Results</div>
-        <div class="panel-tab" onclick="switchPanel('settings')">Settings</div>
+        <div class="panel-tab active" data-panel="results" onclick="switchPanel('results')">Results</div>
+        <div class="panel-tab" data-panel="pbs" onclick="switchPanel('pbs')">PBs</div>
+        <div class="panel-tab" data-panel="settings" onclick="switchPanel('settings')">Settings</div>
       </div>
       <div class="panel-content" id="panelResults">
         <div id="resultsContent">
-          <div style="font-size:13px;color:var(--text3);text-align:center;padding:40px 10px">
-            Session results will appear here after you finish a drill.
+          <div style="font-size:13px;color:var(--text3);text-align:center;padding:36px 10px;line-height:1.5">
+            Session results appear here after each drill.<br>Track progress over time.
           </div>
         </div>
-        <button class="btn btn-ghost" style="width:100%;margin-top:16px" onclick="exportCSV()">Export CSV</button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:14px" onclick="exportCSV()">Export CSV</button>
+      </div>
+      <div class="panel-content" id="panelPbs" style="display:none">
+        <div id="pbsContent">
+          <div style="font-size:13px;color:var(--text3);text-align:center;padding:36px 10px">
+            Personal bests will appear after completed sessions.
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;margin-top:14px" onclick="clearPBs()">Reset PBs</button>
       </div>
       <div class="panel-content" id="panelSettings" style="display:none">
         <div class="settings-group">
@@ -463,6 +552,14 @@ body { position: relative; }
           <label>Session Duration (s)</label>
           <input type="number" id="setDuration" value="45" min="10" max="600" onchange="updateSettings()">
         </div>
+        <div class="settings-group">
+          <label>Target Hits (0 = time based)</label>
+          <input type="number" id="setTargetHits" value="0" min="0" max="300" onchange="updateSettings()">
+        </div>
+        <div class="toggle-row">
+          <span>3-2-1 Countdown</span>
+          <div class="toggle on" id="togCountdown" onclick="toggleSetting(this,'countdown')"></div>
+        </div>
         <div class="toggle-row">
           <span>Sound Effects</span>
           <div class="toggle on" id="togSound" onclick="toggleSetting(this,'sound')"></div>
@@ -478,6 +575,10 @@ body { position: relative; }
         <div class="toggle-row">
           <span>Show Miss Feedback</span>
           <div class="toggle on" id="togMiss" onclick="toggleSetting(this,'miss')"></div>
+        </div>
+        <div class="toggle-row">
+          <span>Streak Counter</span>
+          <div class="toggle on" id="togStreak" onclick="toggleSetting(this,'streak')"></div>
         </div>
       </div>
     </div>
@@ -504,7 +605,7 @@ body { position: relative; }
 <div class="modal-overlay" id="customModal">
   <div class="modal">
     <h3>Create Custom Drill</h3>
-    <p>Build your own reaction pattern. Perfect for sport-specific or rehab protocols.</p>
+    <p>Design a precision protocol for the single athlete. Ideal for sport-specific or rehab work.</p>
     <div class="form-row">
       <label>Drill Name</label>
       <input type="text" id="customName" placeholder="My Agility Circuit" value="Custom Drill">
@@ -513,24 +614,21 @@ body { position: relative; }
       <label>Logic</label>
       <select id="customLogic">
         <option value="random">Random</option>
-        <option value="sequence">Sequence (clockwise)</option>
+        <option value="sequence">Sequence (order)</option>
         <option value="all">All at once</option>
-        <option value="focus">Focus (home base + random)</option>
+        <option value="focus">Home Base Focus</option>
         <option value="cognitive">Cognitive (color rules)</option>
+        <option value="peripheral">Peripheral Vision</option>
+        <option value="double">Double Lights</option>
       </select>
+    </div>
+    <div class="form-row">
+      <label>Duration (seconds)</label>
+      <input type="number" id="customDuration" value="45" min="10" max="600">
     </div>
     <div class="form-row">
       <label>Target Hits (0 = time based)</label>
-      <input type="number" id="customHits" value="0" min="0" max="200">
-    </div>
-    <div class="form-row">
-      <label>Colors</label>
-      <select id="customColors">
-        <option value="all">All Colors</option>
-        <option value="warm">Warm (Red/Orange/Yellow)</option>
-        <option value="cool">Cool (Cyan/Blue/Purple)</option>
-        <option value="red">Red only</option>
-      </select>
+      <input type="number" id="customHits" value="0" min="0" max="300">
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="hideCustomModal()">Cancel</button>
@@ -556,23 +654,28 @@ const COLORS = {
 const COLOR_KEYS = Object.keys(COLORS);
 
 const DRILLS = [
-  { id: 'random', name: 'Random Lights', desc: 'Classic random flash — pure reaction', logic: 'random', duration: 45 },
-  { id: 'sequence', name: 'Sequence Chase', desc: 'Follow the order around the pods', logic: 'sequence', duration: 40 },
-  { id: 'allflash', name: 'All Flash', desc: 'All pods light together — choose any', logic: 'all', duration: 30 },
-  { id: 'focus', name: 'Home Base Focus', desc: 'Return to home pod between targets', logic: 'focus', duration: 50 },
-  { id: 'cognitive', name: 'Cognitive Color', desc: 'Only hit the correct color (ignore others)', logic: 'cognitive', duration: 45 },
-  { id: 'reactiontest', name: 'Reaction Test', desc: 'Single pod pure reaction measurement', logic: 'random', duration: 20, single: true },
-  { id: 'agility', name: 'Agility Circuit', desc: 'High tempo random for footwork', logic: 'random', duration: 60, fast: true },
-  { id: 'endurance', name: 'Endurance Burn', desc: 'Long session, moderate pace', logic: 'random', duration: 90 },
-  { id: 'multi', name: 'Multiplayer Race', desc: 'Compete for most hits in time', logic: 'random', duration: 30, multi: true },
-  { id: 'rehab', name: 'Rehab Control', desc: 'Slow & precise for recovery work', logic: 'random', duration: 40, slow: true }
+  { id: 'random', name: 'Random Lights', desc: 'Classic random flash. Pure reaction speed under uncertainty.', logic: 'random', duration: 45, tag: 'Core' },
+  { id: 'sequence', name: 'Sequence Chase', desc: 'Lights travel in order. Anticipate the next pod.', logic: 'sequence', duration: 40, tag: 'Pattern' },
+  { id: 'allflash', name: 'All Flash', desc: 'Every pod lights together. Choose any — decision under pressure.', logic: 'all', duration: 30, tag: 'Decision' },
+  { id: 'focus', name: 'Home Base Focus', desc: 'Return to the home pod between every target. Builds reset speed.', logic: 'focus', duration: 50, tag: 'Agility' },
+  { id: 'cognitive', name: 'Cognitive Color', desc: 'Only hit the target color. Inhibit the distractors.', logic: 'cognitive', duration: 45, tag: 'Brain' },
+  { id: 'reactiontest', name: 'Pure Reaction Test', desc: 'Single-pod measurement. Clean reaction time baseline.', logic: 'random', duration: 25, tag: 'Test', single: true },
+  { id: 'agility', name: 'Agility Circuit', desc: 'High-tempo random for footwork and change of direction.', logic: 'random', duration: 60, tag: 'Speed', fast: true },
+  { id: 'endurance', name: 'Endurance Burn', desc: 'Long session at moderate pace. Mental stamina under fatigue.', logic: 'random', duration: 90, tag: 'Stamina' },
+  { id: 'peripheral', name: 'Peripheral Vision', desc: 'Lights appear on outer pods. Forces wide visual scan.', logic: 'peripheral', duration: 40, tag: 'Vision' },
+  { id: 'double', name: 'Double Threat', desc: 'Two lights appear. Hit both as fast as possible.', logic: 'double', duration: 40, tag: 'Load' },
+  { id: 'mirror', name: 'Mirror Match', desc: 'Alternating sides. Trains left/right symmetry and balance.', logic: 'mirror', duration: 45, tag: 'Symmetry' },
+  { id: 'ladder', name: 'Speed Ladder', desc: 'Rapid successive lights with short timeouts. Explosive.', logic: 'random', duration: 30, tag: 'Explosive', fast: true },
+  { id: 'decision', name: 'Go / No-Go', desc: 'Green = hit, Red = ignore. Inhibitory control training.', logic: 'gonogo', duration: 40, tag: 'Inhibit' },
+  { id: 'rehab', name: 'Rehab Control', desc: 'Slow, precise, high timeout. Ideal for recovery protocols.', logic: 'random', duration: 40, tag: 'Rehab', slow: true },
+  { id: 'warmup', name: 'Neural Warm-up', desc: 'Gentle progressive pace. Prime the system before hard work.', logic: 'random', duration: 30, tag: 'Prep', slow: true },
+  { id: 'pressure', name: 'Pressure Cooker', desc: 'Short timeouts + high frequency. Stress inoculation.', logic: 'random', duration: 35, tag: 'Stress', fast: true }
 ];
 
-let mode = null; // 'dashboard' | 'pod'
+let mode = null;
 let peer = null;
 let roomCode = '';
-let connections = {}; // peerId -> {conn, name, color, lastHit, hits, rts}
-let podId = null;
+let connections = {};
 let isHost = false;
 
 let currentDrill = null;
@@ -581,18 +684,25 @@ let isPaused = false;
 let sessionStart = 0;
 let timerInterval = null;
 let nextLightTimeout = null;
-let activeLights = {}; // podId -> {color, startTime, timeoutId}
-let sessionStats = { hits: 0, misses: 0, rts: [], byPod: {} };
+let activeLights = {};
+let sessionStats = { hits: 0, misses: 0, rts: [], streak: 0, maxStreak: 0 };
 let sessionHistory = [];
+let personalBests = JSON.parse(localStorage.getItem('lumina_pbs') || '{}');
+let athleteName = localStorage.getItem('lumina_athlete') || '';
+let currentStreak = 0;
+
 let settings = {
   timeout: 1500,
   minDelay: 600,
   maxDelay: 1800,
   duration: 45,
+  targetHits: 0,
+  countdown: true,
   sound: true,
   haptic: true,
   voice: false,
-  miss: true
+  miss: true,
+  streak: true
 };
 
 // ===================== UTILS =====================
@@ -615,9 +725,7 @@ function formatRT(ms) {
   if (ms == null || isNaN(ms)) return '—';
   return (ms / 1000).toFixed(3) + 's';
 }
-function genCode() {
-  return String(rand(1000, 9999));
-}
+function genCode() { return String(rand(1000, 9999)); }
 function playBeep(freq = 880, dur = 80) {
   if (!settings.sound) return;
   try {
@@ -634,7 +742,7 @@ function playBeep(freq = 880, dur = 80) {
 function speak(text) {
   if (!settings.voice || !window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = 1.15; u.pitch = 1.1;
+  u.rate = 1.15; u.pitch = 1.05;
   speechSynthesis.speak(u);
 }
 
@@ -643,26 +751,18 @@ function initPeer(asHost) {
   return new Promise((resolve, reject) => {
     const id = asHost ? 'lumina-' + roomCode : undefined;
     peer = new Peer(id, { debug: 0 });
-    peer.on('open', (id) => {
-      console.log('Peer open', id);
-      resolve(id);
-    });
+    peer.on('open', (id) => resolve(id));
     peer.on('error', (err) => {
-      console.error(err);
       if (err.type === 'unavailable-id') {
-        toast('Room code taken, generating new…');
+        toast('Room code taken — generating new…');
         roomCode = genCode();
         document.getElementById('roomCodeDisplay').textContent = roomCode;
         peer.destroy();
         initPeer(true).then(resolve).catch(reject);
-      } else {
-        reject(err);
-      }
+      } else reject(err);
     });
     if (asHost) {
-      peer.on('connection', (conn) => {
-        setupHostConn(conn);
-      });
+      peer.on('connection', (conn) => setupHostConn(conn));
     }
   });
 }
@@ -680,7 +780,7 @@ function setupHostConn(conn) {
       lastRT: null
     };
     updatePodList();
-    conn.send({ type: 'welcome', name: connections[pid].name, color: colorKey, settings });
+    conn.send({ type: 'welcome', name: connections[pid].name, color: colorKey });
     toast(connections[pid].name + ' connected');
     document.getElementById('startBtn').disabled = Object.keys(connections).length === 0 || !currentDrill;
   });
@@ -695,52 +795,70 @@ function setupHostConn(conn) {
 function handlePodData(pid, data) {
   if (data.type === 'hit') {
     const light = activeLights[pid];
-    if (!light) return; // late or already handled
+    if (!light) return;
     const rt = data.time - light.startTime;
     clearTimeout(light.timeoutId);
     delete activeLights[pid];
 
-    // Cognitive rule check
-    if (currentDrill && currentDrill.logic === 'cognitive') {
-      const targetColor = light.required || 'red';
-      if (light.color !== targetColor) {
-        // wrong color hit = miss
-        sessionStats.misses++;
-        addHitFeed(connections[pid]?.name || 'Pod', 'MISS (wrong color)', true);
-        broadcastToPod(pid, { type: 'miss' });
-        scheduleNext();
+    // Cognitive / Go-NoGo rules
+    if (currentDrill) {
+      if (currentDrill.logic === 'cognitive' && light.required && light.color !== light.required) {
+        registerMiss(pid, 'Wrong color');
         return;
+      }
+      if (currentDrill.logic === 'gonogo') {
+        if (light.color === 'red') {
+          registerMiss(pid, 'No-Go!');
+          return;
+        }
       }
     }
 
-    sessionStats.hits++;
-    sessionStats.rts.push(rt);
-    if (!sessionStats.byPod[pid]) sessionStats.byPod[pid] = { hits: 0, rts: [] };
-    sessionStats.byPod[pid].hits++;
-    sessionStats.byPod[pid].rts.push(rt);
-    if (connections[pid]) {
-      connections[pid].hits++;
-      connections[pid].rts.push(rt);
-      connections[pid].lastRT = rt;
-    }
-    updateLiveStats();
-    addHitFeed(connections[pid]?.name || 'Pod', formatRT(rt));
-    broadcastToPod(pid, { type: 'hit-ack', rt });
-    playBeep(1200, 60);
-    scheduleNext();
-  } else if (data.type === 'ping') {
-    // latency check optional
+    registerHit(pid, rt);
   }
 }
 
+function registerHit(pid, rt) {
+  sessionStats.hits++;
+  sessionStats.rts.push(rt);
+  currentStreak++;
+  if (currentStreak > sessionStats.maxStreak) sessionStats.maxStreak = currentStreak;
+  if (connections[pid]) {
+    connections[pid].hits++;
+    connections[pid].rts.push(rt);
+    connections[pid].lastRT = rt;
+  }
+  updateLiveStats();
+  updateStreakUI();
+  addHitFeed(connections[pid]?.name || 'Pod', formatRT(rt));
+  broadcastToPod(pid, { type: 'hit-ack', rt });
+  playBeep(1200, 55);
+
+  // Target hits check
+  if (settings.targetHits > 0 && sessionStats.hits >= settings.targetHits) {
+    stopDrill();
+    return;
+  }
+  // Double-light: wait until both cleared
+  if (Object.keys(activeLights).length === 0) scheduleNext();
+}
+
+function registerMiss(pid, reason = 'MISS') {
+  sessionStats.misses++;
+  currentStreak = 0;
+  updateLiveStats();
+  updateStreakUI();
+  addHitFeed(connections[pid]?.name || 'Pod', reason, true);
+  broadcastToPod(pid, { type: 'miss' });
+  if (Object.keys(activeLights).length === 0) scheduleNext();
+}
+
 function broadcast(msg) {
-  Object.values(connections).forEach(c => {
-    if (c.conn && c.conn.open) c.conn.send(msg);
-  });
+  Object.values(connections).forEach(c => { if (c.conn?.open) c.conn.send(msg); });
 }
 function broadcastToPod(pid, msg) {
   const c = connections[pid];
-  if (c && c.conn && c.conn.open) c.conn.send(msg);
+  if (c?.conn?.open) c.conn.send(msg);
 }
 
 function updatePodList() {
@@ -760,8 +878,7 @@ function updatePodList() {
       <div class="pod-info">
         <div class="pod-name">${p.name}</div>
         <div class="pod-status">${p.lastRT != null ? formatRT(p.lastRT) : 'Ready'}</div>
-      </div>
-    `;
+      </div>`;
     list.appendChild(el);
   });
   document.getElementById('startBtn').disabled = !currentDrill;
@@ -775,24 +892,25 @@ async function startDashboard() {
   document.getElementById('landing').style.display = 'none';
   document.getElementById('dashboard').classList.add('active');
   document.getElementById('roomCodeDisplay').textContent = roomCode;
+  if (athleteName) document.getElementById('athleteName').value = athleteName;
 
   try {
     await initPeer(true);
     document.getElementById('connDot').style.background = 'var(--green)';
-    toast('Dashboard ready — share code ' + roomCode);
+    toast('Dashboard ready — code ' + roomCode);
   } catch (e) {
     toast('Connection error. Refresh and try again.');
   }
 
-  // Populate drills
   const dl = document.getElementById('drillList');
   DRILLS.forEach(d => {
     const btn = document.createElement('button');
     btn.className = 'drill-btn';
-    btn.innerHTML = `${d.name}<div class="drill-meta">${d.desc}</div>`;
+    btn.innerHTML = `${d.name}<div class="drill-meta">${d.desc}</div><span class="drill-tag">${d.tag}</span>`;
     btn.onclick = () => selectDrill(d, btn);
     dl.appendChild(btn);
   });
+  renderPBs();
 }
 
 function selectDrill(d, btn) {
@@ -802,11 +920,12 @@ function selectDrill(d, btn) {
   document.getElementById('currentDrillName').textContent = d.name;
   document.getElementById('statusText').textContent = d.desc;
   document.getElementById('startBtn').disabled = Object.keys(connections).length === 0;
-  // Apply drill-specific settings
-  if (d.fast) { settings.minDelay = 300; settings.maxDelay = 900; settings.timeout = 1000; }
-  else if (d.slow) { settings.minDelay = 1000; settings.maxDelay = 2500; settings.timeout = 2500; }
+
+  if (d.fast) { settings.minDelay = 280; settings.maxDelay = 850; settings.timeout = 950; }
+  else if (d.slow) { settings.minDelay = 1100; settings.maxDelay = 2600; settings.timeout = 2600; }
   else { settings.minDelay = 600; settings.maxDelay = 1800; settings.timeout = 1500; }
   settings.duration = d.duration || 45;
+  settings.targetHits = 0;
   updateSettingsUI();
 }
 
@@ -818,6 +937,7 @@ function updateSettingsUI() {
   document.getElementById('setMaxDelay').value = settings.maxDelay;
   document.getElementById('maxDelayVal').textContent = settings.maxDelay;
   document.getElementById('setDuration').value = settings.duration;
+  document.getElementById('setTargetHits').value = settings.targetHits;
 }
 
 function updateSettings() {
@@ -825,6 +945,7 @@ function updateSettings() {
   settings.minDelay = +document.getElementById('setMinDelay').value;
   settings.maxDelay = +document.getElementById('setMaxDelay').value;
   settings.duration = +document.getElementById('setDuration').value;
+  settings.targetHits = +document.getElementById('setTargetHits').value;
   document.getElementById('timeoutVal').textContent = settings.timeout;
   document.getElementById('minDelayVal').textContent = settings.minDelay;
   document.getElementById('maxDelayVal').textContent = settings.maxDelay;
@@ -833,12 +954,15 @@ function updateSettings() {
 function toggleSetting(el, key) {
   el.classList.toggle('on');
   settings[key] = el.classList.contains('on');
+  if (key === 'streak') updateStreakUI();
 }
 
 function switchPanel(name) {
-  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  document.querySelectorAll('.panel-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.panel === name);
+  });
   document.getElementById('panelResults').style.display = name === 'results' ? 'block' : 'none';
+  document.getElementById('panelPbs').style.display = name === 'pbs' ? 'block' : 'none';
   document.getElementById('panelSettings').style.display = name === 'settings' ? 'block' : 'none';
 }
 
@@ -846,47 +970,90 @@ function copyRoom() {
   navigator.clipboard.writeText(roomCode).then(() => toast('Room code copied'));
 }
 
+function saveAthlete() {
+  athleteName = document.getElementById('athleteName').value.trim();
+  localStorage.setItem('lumina_athlete', athleteName);
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+  else document.exitFullscreen?.();
+}
+
+function testLights() {
+  if (Object.keys(connections).length === 0) { toast('No pods connected'); return; }
+  const pods = Object.keys(connections);
+  pods.forEach((pid, i) => {
+    setTimeout(() => {
+      const color = COLOR_KEYS[i % COLOR_KEYS.length];
+      broadcastToPod(pid, { type: 'light', color, hex: COLORS[color].hex, timeout: 700 });
+      setTimeout(() => broadcastToPod(pid, { type: 'off' }), 650);
+    }, i * 180);
+  });
+  toast('Testing lights…');
+}
+
 // ===================== DRILL ENGINE =====================
-function startDrill() {
+async function startDrill() {
   if (!currentDrill || Object.keys(connections).length === 0) return;
+
+  if (settings.countdown) {
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('stopBtn').style.display = 'inline-flex';
+    const timerEl = document.getElementById('mainTimer');
+    timerEl.classList.add('countdown');
+    for (let i = 3; i >= 1; i--) {
+      timerEl.textContent = i;
+      document.getElementById('statusText').textContent = 'Get ready…';
+      playBeep(700 + i * 100, 120);
+      speak(String(i));
+      await new Promise(r => setTimeout(r, 900));
+      if (!document.getElementById('stopBtn').style.display || document.getElementById('stopBtn').style.display === 'none') return;
+    }
+    timerEl.classList.remove('countdown');
+    playBeep(1100, 180);
+    speak('Go');
+  }
+
   isRunning = true;
   isPaused = false;
   sessionStart = Date.now();
-  sessionStats = { hits: 0, misses: 0, rts: [], byPod: {} };
+  sessionStats = { hits: 0, misses: 0, rts: [], streak: 0, maxStreak: 0 };
+  currentStreak = 0;
+  window._seqIdx = 0;
+  window._focusHome = true;
+  window._mirrorSide = 0;
+
   Object.keys(connections).forEach(pid => {
     connections[pid].hits = 0;
     connections[pid].rts = [];
     connections[pid].lastRT = null;
   });
+
   document.getElementById('startBtn').style.display = 'none';
   document.getElementById('stopBtn').style.display = 'inline-flex';
   document.getElementById('pauseBtn').style.display = 'inline-flex';
-  document.getElementById('statusText').textContent = 'Session running…';
+  document.getElementById('statusText').textContent = 'Session running';
   document.getElementById('mainTimer').classList.add('running');
   document.getElementById('hitFeed').innerHTML = '';
   updateLiveStats();
+  updateStreakUI();
 
-  broadcast({ type: 'session-start', drill: currentDrill.name, settings });
-  speak('Go');
+  broadcast({ type: 'session-start', drill: currentDrill.name });
 
   timerInterval = setInterval(() => {
     if (isPaused) return;
     const elapsed = Date.now() - sessionStart;
     document.getElementById('mainTimer').textContent = formatTime(elapsed);
-    if (elapsed >= settings.duration * 1000) {
-      stopDrill();
-    }
-  }, 50);
+    if (settings.targetHits === 0 && elapsed >= settings.duration * 1000) stopDrill();
+  }, 40);
 
-  // Initial delay then first light
-  setTimeout(() => scheduleNext(), 800);
+  setTimeout(() => scheduleNext(), 400);
 }
 
 function scheduleNext() {
   if (!isRunning || isPaused) return;
-  // Clear any existing pending
   if (nextLightTimeout) clearTimeout(nextLightTimeout);
-
   const delay = rand(settings.minDelay, settings.maxDelay);
   nextLightTimeout = setTimeout(() => {
     if (!isRunning || isPaused) return;
@@ -897,40 +1064,50 @@ function scheduleNext() {
 function triggerLights() {
   const pods = Object.keys(connections);
   if (pods.length === 0) return;
-
   let targets = [];
   const logic = currentDrill.logic || 'random';
 
   if (logic === 'all') {
-    targets = pods;
+    targets = [...pods];
   } else if (logic === 'sequence') {
-    // simple sequential index
-    if (!window._seqIdx) window._seqIdx = 0;
     targets = [pods[window._seqIdx % pods.length]];
     window._seqIdx++;
   } else if (logic === 'focus') {
-    // home is first pod, then random other
-    if (!window._focusHome) window._focusHome = true;
-    if (window._focusHome) {
-      targets = [pods[0]];
-    } else {
+    if (window._focusHome) targets = [pods[0]];
+    else {
       const others = pods.slice(1);
       targets = others.length ? [pick(others)] : [pods[0]];
     }
     window._focusHome = !window._focusHome;
-  } else if (logic === 'cognitive') {
-    // light random color, but only red (or chosen) is correct
+  } else if (logic === 'peripheral') {
+    // Prefer first and last pods (outer)
+    if (pods.length >= 3) {
+      const outer = [pods[0], pods[pods.length - 1]];
+      targets = [pick(outer)];
+    } else targets = [pick(pods)];
+  } else if (logic === 'double') {
+    targets = [pick(pods)];
+    if (pods.length > 1) {
+      const second = pick(pods.filter(p => p !== targets[0]));
+      if (second) targets.push(second);
+    }
+  } else if (logic === 'mirror') {
+    // Alternate left/right halves
+    const mid = Math.ceil(pods.length / 2);
+    const side = window._mirrorSide % 2 === 0 ? pods.slice(0, mid) : pods.slice(mid);
+    targets = side.length ? [pick(side)] : [pick(pods)];
+    window._mirrorSide++;
+  } else if (logic === 'cognitive' || logic === 'gonogo') {
     targets = [pick(pods)];
   } else {
-    // random — one or occasionally two
     targets = [pick(pods)];
-    if (pods.length > 2 && Math.random() < 0.18) {
+    if (pods.length > 2 && Math.random() < 0.12) {
       const second = pick(pods.filter(p => p !== targets[0]));
       if (second) targets.push(second);
     }
   }
 
-  // Clear previous active
+  // Clear previous
   Object.keys(activeLights).forEach(pid => {
     clearTimeout(activeLights[pid].timeoutId);
     broadcastToPod(pid, { type: 'off' });
@@ -940,8 +1117,9 @@ function triggerLights() {
   targets.forEach(pid => {
     let colorKey;
     if (logic === 'cognitive') {
-      // 60% correct color, 40% distractor
-      colorKey = Math.random() < 0.55 ? 'red' : pick(COLOR_KEYS.filter(c => c !== 'red'));
+      colorKey = Math.random() < 0.58 ? 'red' : pick(COLOR_KEYS.filter(c => c !== 'red'));
+    } else if (logic === 'gonogo') {
+      colorKey = Math.random() < 0.65 ? 'green' : 'red';
     } else {
       colorKey = pick(COLOR_KEYS);
     }
@@ -951,14 +1129,15 @@ function triggerLights() {
       startTime: start,
       required: logic === 'cognitive' ? 'red' : null,
       timeoutId: setTimeout(() => {
-        // miss
         if (activeLights[pid]) {
+          // For go/nogo: missing a green is a miss; ignoring a red is correct (no penalty)
+          if (logic === 'gonogo' && activeLights[pid].color === 'red') {
+            delete activeLights[pid];
+            if (Object.keys(activeLights).length === 0) scheduleNext();
+            return;
+          }
           delete activeLights[pid];
-          sessionStats.misses++;
-          addHitFeed(connections[pid]?.name || 'Pod', 'MISS', true);
-          broadcastToPod(pid, { type: 'miss' });
-          updateLiveStats();
-          scheduleNext();
+          registerMiss(pid);
         }
       }, settings.timeout)
     };
@@ -969,13 +1148,13 @@ function triggerLights() {
       timeout: settings.timeout
     });
   });
-  playBeep(660, 40);
+  playBeep(620, 35);
 }
 
 function togglePause() {
   isPaused = !isPaused;
   document.getElementById('pauseBtn').textContent = isPaused ? 'Resume' : 'Pause';
-  document.getElementById('statusText').textContent = isPaused ? 'Paused' : 'Session running…';
+  document.getElementById('statusText').textContent = isPaused ? 'Paused' : 'Session running';
   broadcast({ type: isPaused ? 'pause' : 'resume' });
   if (!isPaused) scheduleNext();
 }
@@ -993,31 +1172,64 @@ function stopDrill() {
   document.getElementById('startBtn').style.display = 'inline-flex';
   document.getElementById('stopBtn').style.display = 'none';
   document.getElementById('pauseBtn').style.display = 'none';
-  document.getElementById('mainTimer').classList.remove('running');
+  document.getElementById('mainTimer').classList.remove('running', 'countdown');
   document.getElementById('statusText').textContent = 'Session complete';
 
-  // Save results
+  const avg = sessionStats.rts.length ? sessionStats.rts.reduce((a,b)=>a+b,0) / sessionStats.rts.length : null;
+  const best = sessionStats.rts.length ? Math.min(...sessionStats.rts) : null;
+  const acc = (sessionStats.hits + sessionStats.misses) > 0
+    ? Math.round(100 * sessionStats.hits / (sessionStats.hits + sessionStats.misses)) : 0;
+
   const result = {
     drill: currentDrill?.name || 'Custom',
+    athlete: athleteName || 'Athlete',
     time: new Date().toLocaleString(),
     duration: Date.now() - sessionStart,
     hits: sessionStats.hits,
     misses: sessionStats.misses,
-    avgRT: sessionStats.rts.length ? sessionStats.rts.reduce((a,b)=>a+b,0) / sessionStats.rts.length : null,
-    bestRT: sessionStats.rts.length ? Math.min(...sessionStats.rts) : null,
-    accuracy: (sessionStats.hits + sessionStats.misses) > 0
-      ? Math.round(100 * sessionStats.hits / (sessionStats.hits + sessionStats.misses))
-      : 0,
-    byPod: { ...sessionStats.byPod }
+    avgRT: avg,
+    bestRT: best,
+    accuracy: acc,
+    maxStreak: sessionStats.maxStreak
   };
   sessionHistory.unshift(result);
+  updatePBs(result);
   renderResults();
-  speak('Session complete. Great work.');
-  toast('Session saved');
+  renderPBs();
+  speak('Session complete');
+  toast('Session saved' + (result.bestRT && isNewPB(result) ? ' • New PB!' : ''));
+}
+
+function isNewPB(r) {
+  const key = r.drill;
+  const pb = personalBests[key];
+  return !pb || (r.bestRT && r.bestRT < pb.bestRT);
+}
+
+function updatePBs(r) {
+  const key = r.drill;
+  if (!personalBests[key]) personalBests[key] = {};
+  const pb = personalBests[key];
+  let changed = false;
+  if (r.bestRT != null && (pb.bestRT == null || r.bestRT < pb.bestRT)) {
+    pb.bestRT = r.bestRT; changed = true;
+  }
+  if (r.avgRT != null && (pb.avgRT == null || r.avgRT < pb.avgRT)) {
+    pb.avgRT = r.avgRT; changed = true;
+  }
+  if (r.accuracy > (pb.accuracy || 0)) {
+    pb.accuracy = r.accuracy; changed = true;
+  }
+  if (r.maxStreak > (pb.maxStreak || 0)) {
+    pb.maxStreak = r.maxStreak; changed = true;
+  }
+  pb.last = r.time;
+  if (changed) localStorage.setItem('lumina_pbs', JSON.stringify(personalBests));
 }
 
 function updateLiveStats() {
   document.getElementById('statHits').textContent = sessionStats.hits;
+  document.getElementById('statMiss').textContent = sessionStats.misses;
   const avg = sessionStats.rts.length ? sessionStats.rts.reduce((a,b)=>a+b,0) / sessionStats.rts.length : null;
   const best = sessionStats.rts.length ? Math.min(...sessionStats.rts) : null;
   document.getElementById('statAvg').textContent = avg != null ? (avg/1000).toFixed(3) : '—';
@@ -1027,56 +1239,100 @@ function updateLiveStats() {
   updatePodList();
 }
 
+function updateStreakUI() {
+  const el = document.getElementById('streakBadge');
+  if (settings.streak && isRunning) {
+    el.style.display = 'inline-block';
+    el.textContent = '🔥 ' + currentStreak;
+  } else {
+    el.style.display = 'none';
+  }
+}
+
 function addHitFeed(name, rt, isMiss = false) {
   const feed = document.getElementById('hitFeed');
   const item = document.createElement('div');
   item.className = 'hit-item';
   item.innerHTML = `<span>${name}</span><span class="rt" style="${isMiss ? 'color:var(--accent)' : ''}">${rt}</span>`;
   feed.prepend(item);
-  if (feed.children.length > 12) feed.removeChild(feed.lastChild);
+  if (feed.children.length > 14) feed.removeChild(feed.lastChild);
 }
 
 function renderResults() {
   const box = document.getElementById('resultsContent');
   if (sessionHistory.length === 0) return;
   const r = sessionHistory[0];
+  const pb = personalBests[r.drill] || {};
+  const isBest = r.bestRT && pb.bestRT && Math.abs(r.bestRT - pb.bestRT) < 1;
   box.innerHTML = `
-    <div style="font-size:14px;font-weight:600;margin-bottom:12px">${r.drill}</div>
-    <div class="result-row"><span class="label">Time</span><span class="value">${r.time}</span></div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:4px">${r.drill}</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">${r.athlete} • ${r.time}</div>
     <div class="result-row"><span class="label">Duration</span><span class="value">${formatTime(r.duration)}</span></div>
     <div class="result-row"><span class="label">Hits</span><span class="value">${r.hits}</span></div>
     <div class="result-row"><span class="label">Misses</span><span class="value">${r.misses}</span></div>
     <div class="result-row"><span class="label">Accuracy</span><span class="value">${r.accuracy}%</span></div>
     <div class="result-row"><span class="label">Avg Reaction</span><span class="value">${formatRT(r.avgRT)}</span></div>
-    <div class="result-row"><span class="label">Best Reaction</span><span class="value" style="color:var(--green)">${formatRT(r.bestRT)}</span></div>
+    <div class="result-row"><span class="label">Best Reaction</span><span class="value" style="color:var(--green)">${formatRT(r.bestRT)}${isBest ? '<span class="pb-badge">PB</span>' : ''}</span></div>
+    <div class="result-row"><span class="label">Max Streak</span><span class="value">${r.maxStreak}</span></div>
   `;
+}
+
+function renderPBs() {
+  const box = document.getElementById('pbsContent');
+  const keys = Object.keys(personalBests);
+  if (keys.length === 0) {
+    box.innerHTML = '<div style="font-size:13px;color:var(--text3);text-align:center;padding:36px 10px">No personal bests yet.<br>Complete drills to set records.</div>';
+    return;
+  }
+  box.innerHTML = keys.map(k => {
+    const pb = personalBests[k];
+    return `<div style="margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:600;margin-bottom:6px">${k}</div>
+      <div class="result-row" style="padding:4px 0"><span class="label">Best RT</span><span class="value" style="color:var(--green)">${formatRT(pb.bestRT)}</span></div>
+      <div class="result-row" style="padding:4px 0"><span class="label">Best Avg</span><span class="value">${formatRT(pb.avgRT)}</span></div>
+      <div class="result-row" style="padding:4px 0"><span class="label">Best Acc</span><span class="value">${pb.accuracy || 0}%</span></div>
+      <div class="result-row" style="padding:4px 0"><span class="label">Max Streak</span><span class="value">${pb.maxStreak || 0}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function clearPBs() {
+  if (!confirm('Reset all personal bests?')) return;
+  personalBests = {};
+  localStorage.removeItem('lumina_pbs');
+  renderPBs();
+  toast('Personal bests cleared');
 }
 
 function exportCSV() {
   if (sessionHistory.length === 0) { toast('No data yet'); return; }
-  let csv = 'Drill,Time,Duration(ms),Hits,Misses,Accuracy,AvgRT(ms),BestRT(ms)\n';
+  let csv = 'Athlete,Drill,Time,Duration(ms),Hits,Misses,Accuracy,AvgRT(ms),BestRT(ms),MaxStreak\n';
   sessionHistory.forEach(r => {
-    csv += `"${r.drill}","${r.time}",${r.duration},${r.hits},${r.misses},${r.accuracy},${r.avgRT?.toFixed(0)||''},${r.bestRT?.toFixed(0)||''}\n`;
+    csv += `"${r.athlete}","${r.drill}","${r.time}",${r.duration},${r.hits},${r.misses},${r.accuracy},${r.avgRT?.toFixed(0)||''},${r.bestRT?.toFixed(0)||''},${r.maxStreak}\n`;
   });
   const blob = new Blob([csv], { type: 'text/csv' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'luminapods-results.csv';
+  a.download = `luminapods-${athleteName || 'session'}.csv`;
   a.click();
   toast('CSV exported');
 }
 
-// Custom drill
+// Custom
 function showCustomModal() { document.getElementById('customModal').classList.add('show'); }
 function hideCustomModal() { document.getElementById('customModal').classList.remove('show'); }
 function createCustomDrill() {
   const name = document.getElementById('customName').value || 'Custom Drill';
   const logic = document.getElementById('customLogic').value;
-  const d = { id: 'custom-' + Date.now(), name, desc: 'User created', logic, duration: settings.duration };
+  const duration = +document.getElementById('customDuration').value || 45;
+  const d = { id: 'custom-' + Date.now(), name, desc: 'Custom protocol', logic, duration, tag: 'Custom' };
   currentDrill = d;
+  settings.duration = duration;
+  settings.targetHits = +document.getElementById('customHits').value || 0;
   document.getElementById('currentDrillName').textContent = name;
   document.getElementById('statusText').textContent = 'Custom drill ready';
   document.getElementById('startBtn').disabled = Object.keys(connections).length === 0;
+  updateSettingsUI();
   hideCustomModal();
   toast('Custom drill created');
 }
@@ -1086,10 +1342,7 @@ function startPod() {
   mode = 'pod';
   document.getElementById('landing').style.display = 'none';
   document.getElementById('pod').classList.add('active');
-  // Prevent sleep
-  if (navigator.wakeLock) {
-    navigator.wakeLock.request('screen').catch(()=>{});
-  }
+  if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(()=>{});
 }
 
 async function joinRoom() {
@@ -1107,7 +1360,7 @@ async function joinRoom() {
       document.getElementById('podJoin').style.display = 'none';
       document.getElementById('podHint').textContent = 'Connected — waiting for lights';
       document.getElementById('podLabel').textContent = 'Connected';
-      toast('Joined session!');
+      toast('Joined session');
     });
     conn.on('data', handleHostMessage);
     conn.on('close', () => {
@@ -1115,7 +1368,6 @@ async function joinRoom() {
       document.getElementById('podScreen').style.background = '#000';
       toast('Connection lost');
     });
-    // store for sending hits
     window._podConn = conn;
   } catch (e) {
     document.getElementById('podJoinStatus').textContent = 'Failed. Check code & try again.';
@@ -1125,7 +1377,7 @@ async function joinRoom() {
 function handleHostMessage(data) {
   if (data.type === 'welcome') {
     document.getElementById('podLabel').textContent = data.name;
-    document.getElementById('podHint').textContent = 'Ready — wait for the coach to start';
+    document.getElementById('podHint').textContent = 'Ready — wait for the coach';
   } else if (data.type === 'light') {
     const screen = document.getElementById('podScreen');
     screen.style.background = data.hex;
@@ -1134,8 +1386,8 @@ function handleHostMessage(data) {
     document.getElementById('podHint').textContent = '';
     window._lightStart = Date.now();
     window._isLit = true;
-    if (settings.haptic && navigator.vibrate) navigator.vibrate(30);
-    playBeep(880, 50);
+    if (settings.haptic && navigator.vibrate) navigator.vibrate(28);
+    playBeep(880, 45);
   } else if (data.type === 'off' || data.type === 'miss' || data.type === 'hit-ack') {
     const screen = document.getElementById('podScreen');
     screen.style.background = '#000';
@@ -1144,11 +1396,10 @@ function handleHostMessage(data) {
     window._isLit = false;
     if (data.type === 'miss' && settings.miss) {
       document.getElementById('podHint').textContent = 'Missed';
-      setTimeout(() => { if (!window._isLit) document.getElementById('podHint').textContent = ''; }, 600);
+      setTimeout(() => { if (!window._isLit) document.getElementById('podHint').textContent = ''; }, 700);
     }
   } else if (data.type === 'session-start') {
     document.getElementById('podHint').textContent = 'GO!';
-    speak('Go');
   } else if (data.type === 'session-end') {
     document.getElementById('podHint').textContent = 'Session complete';
     document.getElementById('podScreen').style.background = '#000';
@@ -1165,17 +1416,13 @@ function podTap(e) {
   const t = Date.now();
   window._podConn.send({ type: 'hit', time: t });
   window._isLit = false;
-  // immediate visual feedback
   document.getElementById('podScreen').style.background = '#111';
   document.getElementById('podCenter').textContent = '✓';
-  if (settings.haptic && navigator.vibrate) navigator.vibrate([20, 30, 20]);
-  playBeep(1400, 70);
+  if (settings.haptic && navigator.vibrate) navigator.vibrate([18, 25, 18]);
+  playBeep(1400, 60);
 }
 
-// Prevent zoom / scroll on pod
 document.getElementById('pod').addEventListener('touchmove', e => e.preventDefault(), { passive: false });
-
-// Auto-focus join input
 document.getElementById('joinCode')?.addEventListener('input', function() {
   this.value = this.value.replace(/\D/g, '').slice(0,4);
 });
