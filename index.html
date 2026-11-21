@@ -296,13 +296,23 @@ body { position: relative; }
 #pod {
   display: none; position: fixed; inset: 0; background: #000;
   flex-direction: column; align-items: center; justify-content: center;
-  z-index: 50; touch-action: manipulation;
+  z-index: 50;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 #pod.active { display: flex; }
 .pod-screen {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.08s ease-out;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  cursor: default;
 }
 .pod-screen.lit { cursor: pointer; }
 .pod-label {
@@ -570,7 +580,7 @@ body { position: relative; }
 
 <!-- POD MODE -->
 <div id="pod">
-  <div class="pod-screen" id="podScreen" onclick="podTap(event)">
+  <div class="pod-screen" id="podScreen">
     <div class="pod-label" id="podLabel">LuminaPods</div>
     <div class="pod-center" id="podCenter">●</div>
     <div class="pod-hint" id="podHint">Waiting for connection…</div>
@@ -1697,19 +1707,69 @@ function handleHostMessage(data) {
   }
 }
 
+// ===================== ULTRA-RELIABLE TOUCH HANDLING =====================
 function podTap(e) {
+  // Only process when the light is actually on
   if (!window._isLit || !window._podConn) return;
+
+  // Ignore secondary pointers (multi-touch) and non-primary events
+  if (e.type.startsWith('pointer') && e.isPrimary === false) return;
+  if (e.type === 'touchstart' && e.touches && e.touches.length > 1) return;
+
+  // Stop the browser from treating this as a scroll/swipe/click-cancel
   e.preventDefault();
+  e.stopPropagation();
+  if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+
+  // Capture the earliest possible time
   const t = Date.now();
-  window._podConn.send({ type: 'hit', time: t });
+
+  // Immediately mark as no longer lit so rapid double-fires are ignored
   window._isLit = false;
-  document.getElementById('podScreen').style.background = '#111';
+
+  // Send the hit
+  window._podConn.send({ type: 'hit', time: t });
+
+  // Instant visual + haptic + audio feedback
+  const screen = document.getElementById('podScreen');
+  screen.style.background = '#111';
+  screen.classList.remove('lit');
   document.getElementById('podCenter').textContent = '✓';
-  if (settings.haptic && navigator.vibrate) navigator.vibrate([18, 25, 18]);
+
+  if (settings.haptic && navigator.vibrate) {
+    navigator.vibrate([18, 25, 18]);
+  }
   playBeep(1400, 60);
 }
 
-document.getElementById('pod').addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+// Attach the most reliable event listeners possible
+(function setupPodTouch() {
+  const screen = document.getElementById('podScreen');
+  if (!screen) return;
+
+  // Prefer Pointer Events (covers mouse + touch + pen cleanly)
+  if (window.PointerEvent) {
+    screen.addEventListener('pointerdown', podTap, { passive: false, capture: true });
+  } else {
+    // Fallback for older browsers
+    screen.addEventListener('touchstart', podTap, { passive: false, capture: true });
+    screen.addEventListener('mousedown', podTap, { passive: false, capture: true });
+  }
+
+  // Extra safety: kill any residual movement that could cancel gestures
+  document.getElementById('pod').addEventListener('touchmove', function(e) {
+    // Allow the join input to work normally
+    if (e.target.closest('#podJoin')) return;
+    e.preventDefault();
+  }, { passive: false });
+
+  // Also block the classic 300ms click delay / synthetic click issues
+  screen.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }, true);
+})();
+
 document.getElementById('joinCode')?.addEventListener('input', function() {
   this.value = this.value.replace(/\D/g, '').slice(0,4);
 });
